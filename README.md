@@ -15,3 +15,4 @@ You will need to perform the following steps to complete the analysis:
 a.Calculate the immune scores of each immune signature for each sample (you can calculate mean expression or use GSVA)
 
 b.Compare the immune signatures enrichment between each two classs using Student’s t test
+c.Investigate the correlation of the each immune signature with the expression of specific genes
