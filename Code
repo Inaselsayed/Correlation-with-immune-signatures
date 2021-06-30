@@ -1,0 +1,41 @@
+#Read the gene expression datasets
+a = read.csv("D:/SMPD/neuro/sert/omics/mergedADNM.csv", header = TRUE, row.names=1,stringsAsFactors = FALSE) #contains adenoma and normal mucosa samples
+#a = read.csv("D:/SMPD/neuro/sert/omics/mergedADvsHC.csv", header = TRUE, row.names=1,stringsAsFactors = FALSE)  #contains adenoma and normal healthy colon samples
+#a = read.csv("D:/SMPD/neuro/sert/omics/mergedADCAR.csv", header = TRUE, row.names=1,stringsAsFactors = FALSE)  #contains adenoma and adenocarcinoma samples
+
+#Read the immune signatures file
+imm <- read.csv("imm_sig.csv", header = FALSE, stringsAsFactors = FALSE)
+#Calculate the immune score
+resC <- c()
+for (i in 1:dim(imm)[2]) {
+	pos <- match(as.numeric(imm[-1,i])[!is.na(as.numeric(imm[-1,i]))], rownames(a)) 
+	a1 <- a[pos,]
+	res <- t(colMeans(a1, na.rm = TRUE))
+	rownames(res) <- imm[1,i]
+	resC <- rbind(resC, res)
+}
+write.csv(resC, "D:/SMPD/neuro/sert/omics/Imm.score.csv")
+
+# T-test
+#Read the class file
+phe <- read.csv("class.csv", stringsAsFactors = FALSE, header = TRUE)
+#Read the immune score file
+b = read.csv("D:/SMPD/neuro/sert/omics/Imm.score.csv", header = TRUE, row.names=1,stringsAsFactors = FALSE) #contains adenoma and normal mucosa samples
+# Perform T-test
+Normal<- b[,match(phe$sample[phe$class == "Normal"], colnames(b))]
+adenoma <- b[,match(phe$sample[phe$class == "adenoma"], colnames(b))]
+adenocarcinoma<- b[,match(phe$sample[phe$class == "adenocarcinoma"], colnames(b))]
+resC <- c()
+for (i in 1:dim(b)[1]) {
+	x = as.numeric(adenoma[i,]); y = as.numeric(Normal[i,])  #You can use adenocarcinoma or NM in case you like to perform AD-CAR or AD-NM comparisons
+	p.value = t.test(x, y, paired = F, na.rm = TRUE)$p.value
+	log2FC = mean(x, na.rm = TRUE) - mean(y, na.rm = TRUE)
+	res = cbind(rownames(b)[i], p.value, log2FC)
+	resC = rbind(resC, res)
+}
+resC <- resC[order(as.numeric(resC[,2])),]
+FDR <- rep(1,dim(resC)[1]); for(i in 1:dim(resC)[1]) FDR[i] = as.numeric(resC[i,2]) * dim(resC)[1] / i
+resC <- cbind(resC, FDR)
+write.csv(resC, "D:/SMPD/neuro/sert/omics/AD-NMimm.csv", row.names = FALSE)
+#write.csv(resC, "D:/SMPD/neuro/sert/omics/AD-HCimm.csv", row.names = FALSE)
+#write.csv(resC, "D:/SMPD/neuro/sert/omics/AD-CARimm.csv", row.names = FALSE)
