@@ -1,6 +1,6 @@
 # Correlation-with-immune-signatures
 
-This code will help you investigate the correlation of specific phenotype (disease, tissue type,....etc) with enrichment of scpecific immune signatures.
+This code from Dr.Xiaosheng Wang's lab. will help you investigate the correlation of specific phenotype (disease, tissue type,....etc) with enrichment of scpecific immune signatures.
 You will need to prepare the following:
 
 1. Your datasets containing normalized gene expression values of the samples
