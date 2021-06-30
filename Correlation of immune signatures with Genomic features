@@ -1,0 +1,33 @@
+#Use the immune score files 
+imm = read.csv("coad_Imm.score.csv", header = TRUE, row.names=1,stringsAsFactors = FALSE)
+
+#Read the gene expression data
+a = read.csv("D:/SMPD/neuro/sert/omics/mergedAD.csv",row.names=1, stringsAsFactors=FALSE) 
+
+
+# Perform Pearson's correlation analysis
+co = intersect(substr(colnames(a),1,16), substr(colnames(imm),1,16))
+a_co = a[,match(co, substr(colnames(a),1,16))]
+imm_co = imm[,match(co, substr(colnames(imm),1,16))]
+
+res=c()
+for (m in rownames(a_co)) 
+{
+ x = as.matrix(a_co[rownames(a_co)==m,])
+ resC = c()
+for (i in 1:dim(imm_co)[1]){
+ y =as.matrix(imm_co[i,])
+ if(length(x) >= 3 & length(y) >= 3){
+ p.value = cor.test(as.numeric(x), as.numeric(y), method="pearson")$p.value
+ r = cor.test(as.numeric(x), as.numeric(y), method="pearson")$estimate }
+
+pv = cbind(rownames(imm_co)[i], p.value, r=r[[1]])
+
+
+resC = rbind(resC, pv)
+colnames(resC) = c(m,"pv","r")}
+ 
+
+res=cbind(res,r)
+ }
+write.csv(res,"D:/SMPD/neuro/sert/omics/Pearson's immune corelation.csv", row.names=FALSE)
