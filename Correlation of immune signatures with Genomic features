@@ -13,7 +13,7 @@ imm_co = imm[,match(co, substr(colnames(imm),1,16))]
 res=c()
 for (m in rownames(a_co)) 
 {
- x = as.matrix(a_co[rownames(a_co)==m,])
+ x = as.matrix(a_co[rownames(a_co)==m,]) #Replace m with the gene symbol/s
  resC = c()
 for (i in 1:dim(imm_co)[1]){
  y =as.matrix(imm_co[i,])
@@ -30,4 +30,4 @@ colnames(resC) = c(m,"pv","r")}
 
 res=cbind(res,r)
  }
-write.csv(res,"D:/SMPD/neuro/sert/omics/Pearson's immune corelation.csv", row.names=FALSE)
+write.csv(res,"D:/SMPD/neuro/sert/omics/Pearson's immune corelation"m".csv", row.names=FALSE)
